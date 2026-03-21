@@ -1,0 +1,526 @@
+<template>
+    <div class="app">
+
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-logo">
+                <lightning-icon icon-name="standard:home" size="x-small"></lightning-icon>
+            </div>
+            <div class="header-title">
+                <h1>Site Assessment</h1>
+                <p>{headerSubtitle}</p>
+            </div>
+            <div class="header-ref">#{assessmentRef}</div>
+            <div class={demoPillClass} onclick={handleDemoToggle}>
+                <span class="demo-pill-label">Demo</span>
+                <div class={demoPillTrackClass}>
+                    <div class={demoPillThumbClass}></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="progress-bar">
+            <div class="progress-steps">
+                <div class="step-wrapper">
+                    <div class={step1DotClass}>{step1Label}</div>
+                    <div class={step1LabelClass}>Site</div>
+                </div>
+                <div class={line1Class}></div>
+                <div class="step-wrapper">
+                    <div class={step2DotClass}>{step2Label}</div>
+                    <div class={step2LabelClass}>Config</div>
+                </div>
+                <div class={line2Class}></div>
+                <div class="step-wrapper">
+                    <div class={step3DotClass}>{step3Label}</div>
+                    <div class={step3LabelClass}>Quote</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 1: SITE PHOTOS + DIMENSIONS -->
+        <template if:true={isScreen1}>
+            <div class="content">
+
+                <!-- Photos -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <lightning-icon icon-name="utility:image" size="x-small" alternative-text="Photos"></lightning-icon>
+                        </div>
+                        <div>
+                            <div class="section-title">Site Photos</div>
+                            <div class="section-subtitle">Upload 1–3 photos of the installation space (at least 1 required)</div>
+                        </div>
+                    </div>
+
+                    <template if:true={hasUploadedFiles}>
+                        <ul class="uploaded-file-list">
+                            <template for:each={uploadedFileList} for:item="f">
+                                <li key={f.index} class="uploaded-file-item">
+                                    <lightning-icon icon-name="utility:file" size="xx-small" alternative-text="File"></lightning-icon>
+                                    {f.label}
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+
+                    <div class="upload-area">
+                        <div class="upload-btn-wrap">
+                            <lightning-file-upload
+                                label="Add Site Photos"
+                                name="sitePhotos"
+                                accept={acceptedFormats}
+                                record-id={recordId}
+                                onuploadfinished={handleUploadFinished}
+                                multiple>
+                            </lightning-file-upload>
+                        </div>
+                        <p class="upload-hint">Uploads are saved directly to this Opportunity</p>
+                    </div>
+
+                    <template if:true={photoError}>
+                        <p class="field-error">{photoError}</p>
+                    </template>
+                </div>
+
+                <!-- Dimensions -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <lightning-icon icon-name="utility:apex" size="x-small" alternative-text="Dimensions"></lightning-icon>
+                        </div>
+                        <div>
+                            <div class="section-title">Space Dimensions</div>
+                            <div class="section-subtitle">Available installation area</div>
+                        </div>
+                    </div>
+
+                    <div class="dim-row">
+                        <div class="dim-field">
+                            <label>Width</label>
+                            <input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                placeholder="0.0"
+                                value={dimensions.width}
+                                data-field="width"
+                                onchange={handleDimensionChange}
+                            />
+                            <div class="dim-unit">meters</div>
+                        </div>
+                        <div class="dim-field">
+                            <label>Height</label>
+                            <input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                placeholder="0.0"
+                                value={dimensions.height}
+                                data-field="height"
+                                onchange={handleDimensionChange}
+                            />
+                            <div class="dim-unit">meters</div>
+                        </div>
+                        <div class="dim-field">
+                            <label>Depth</label>
+                            <input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                placeholder="0.0"
+                                value={dimensions.depth}
+                                data-field="depth"
+                                onchange={handleDimensionChange}
+                            />
+                            <div class="dim-unit">meters</div>
+                        </div>
+                    </div>
+                    <template if:true={dimensionError}>
+                        <p class="field-error">{dimensionError}</p>
+                    </template>
+                </div>
+
+                <!-- Site Details -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <lightning-icon icon-name="utility:groups" size="x-small" alternative-text="Details"></lightning-icon>
+                        </div>
+                        <div>
+                            <div class="section-title">Site Details</div>
+                            <div class="section-subtitle">Customer &amp; location info</div>
+                        </div>
+                    </div>
+
+                    <div class="site-field">
+                        <label>Store / Location name</label>
+                        <input
+                            type="text"
+                            placeholder="e.g. REMA 1000 Grønland"
+                            value={siteDetails.storeName}
+                            data-field="storeName"
+                            onchange={handleSiteDetailChange}
+                        />
+                    </div>
+                    <div class="site-field">
+                        <label>City</label>
+                        <input
+                            type="text"
+                            placeholder="e.g. Oslo"
+                            value={siteDetails.city}
+                            data-field="city"
+                            onchange={handleSiteDetailChange}
+                        />
+                    </div>
+                    <div class="photo-note-section">
+                        <label>Site notes (optional)</label>
+                        <textarea
+                            placeholder="Describe any access constraints, power availability, floor conditions..."
+                            value={siteDetails.notes}
+                            data-field="notes"
+                            onchange={handleSiteDetailChange}
+                        ></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </template>
+
+        <!-- SCREEN 2: CONFIGURATION QUESTIONNAIRE -->
+        <template if:true={isScreen2}>
+            <div class="content">
+
+                <template if:true={aiPrefilled}>
+                    <div class="ai-prefill-banner">
+                        <lightning-icon icon-name="utility:einstein" size="xx-small" alternative-text="AI"></lightning-icon>
+                        AI pre-filled this form from your site photos &amp; dimensions. Review and adjust before generating the quote.
+                    </div>
+                </template>
+
+                <!-- System Layout -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <lightning-icon icon-name="utility:settings" size="x-small" alternative-text="Layout"></lightning-icon>
+                        </div>
+                        <div>
+                            <div class="section-title">System Layout</div>
+                            <div class="section-subtitle">Select the tunnel configuration</div>
+                        </div>
+                    </div>
+                    <template for:each={layoutOptions} for:item="opt">
+                        <button key={opt.id} class={opt.btnClass} data-group="layout" data-id={opt.id} onclick={handleSingleSelect}>
+                            <span class={opt.checkClass}><span class="opt-check-inner"></span></span>
+                            <span class="opt-label">{opt.label}</span>
+                            <template if:true={opt.note}>
+                                <span class="opt-note">{opt.note}</span>
+                            </template>
+                        </button>
+                    </template>
+                </div>
+
+                <!-- Container Types + Performance -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <lightning-icon icon-name="utility:metrics" size="x-small" alternative-text="Containers"></lightning-icon>
+                        </div>
+                        <div>
+                            <div class="section-title">Container Types &amp; Performance</div>
+                            <div class="section-subtitle">Select all accepted container types</div>
+                        </div>
+                    </div>
+
+                    <div class="option-grid">
+                        <template for:each={containerOptions} for:item="opt">
+                            <button key={opt.id} class={opt.btnClass} data-group="containers" data-id={opt.id} onclick={handleMultiSelect}>
+                                <span class={opt.checkClass}><span class="opt-check-inner"></span></span>
+                                {opt.label}
+                            </button>
+                        </template>
+                    </div>
+
+                    <div class="divider"></div>
+                    <div class="q-group-label">Performance Tier</div>
+
+                    <div class="option-grid">
+                        <template for:each={performanceOptions} for:item="opt">
+                            <button key={opt.id} class={opt.btnClass} data-group="performance" data-id={opt.id} onclick={handleSingleSelect}>
+                                <span class={opt.checkClass}><span class="opt-check-inner"></span></span>
+                                <div>
+                                    <div>{opt.label}</div>
+                                    <div class="opt-sub">{opt.note}</div>
+                                </div>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Hardware + Software Add-Ons -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <lightning-icon icon-name="utility:add" size="x-small" alternative-text="Add-ons"></lightning-icon>
+                        </div>
+                        <div>
+                            <div class="section-title">Hardware Add-Ons</div>
+                            <div class="section-subtitle">Optional equipment</div>
+                        </div>
+                    </div>
+
+                    <template for:each={hardwareOptions} for:item="opt">
+                        <button key={opt.id} class={opt.btnClass} data-group="hardware" data-id={opt.id} onclick={handleMultiSelect}>
+                            <span class={opt.checkClass}><span class="opt-check-inner"></span></span>
+                            {opt.label}
+                        </button>
+                    </template>
+
+                    <div class="divider"></div>
+                    <div class="q-group-label">Digital &amp; Software</div>
+
+                    <template for:each={softwareOptions} for:item="opt">
+                        <button key={opt.id} class={opt.btnClass} data-group="software" data-id={opt.id} onclick={handleMultiSelect}>
+                            <span class={opt.checkClass}><span class="opt-check-inner"></span></span>
+                            <span class="opt-label">{opt.label}</span>
+                            <template if:true={opt.note}>
+                                <span class="opt-note">{opt.note}</span>
+                            </template>
+                        </button>
+                    </template>
+                </div>
+
+                <!-- Services -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <lightning-icon icon-name="utility:file" size="x-small" alternative-text="Services"></lightning-icon>
+                        </div>
+                        <div>
+                            <div class="section-title">Services</div>
+                            <div class="section-subtitle">Implementation, training &amp; support</div>
+                        </div>
+                    </div>
+
+                    <div class="q-group-label">Implementation</div>
+                    <template for:each={implementationOptions} for:item="opt">
+                        <button key={opt.id} class={opt.btnClass} data-group="implementation" data-id={opt.id} onclick={handleMultiSelect}>
+                            <span class={opt.checkClass}><span class="opt-check-inner"></span></span>
+                            {opt.label}
+                        </button>
+                    </template>
+
+                    <div class="divider"></div>
+                    <div class="q-group-label">Training</div>
+                    <template for:each={trainingOptions} for:item="opt">
+                        <button key={opt.id} class={opt.btnClass} data-group="training" data-id={opt.id} onclick={handleMultiSelect}>
+                            <span class={opt.checkClass}><span class="opt-check-inner"></span></span>
+                            {opt.label}
+                        </button>
+                    </template>
+
+                    <div class="divider"></div>
+                    <div class="q-group-label">Support &amp; Maintenance</div>
+                    <template for:each={supportOptions} for:item="opt">
+                        <button key={opt.id} class={opt.btnClass} data-group="support" data-id={opt.id} onclick={handleMultiSelect}>
+                            <span class={opt.checkClass}><span class="opt-check-inner"></span></span>
+                            {opt.label}
+                        </button>
+                    </template>
+                </div>
+
+            </div>
+        </template>
+
+        <!-- SCREEN LOADING -->
+        <template if:true={isLoading}>
+            <div class="content">
+                <div class="loading-screen">
+                    <div class="spinner"></div>
+                    <div class="loading-title">{loadingTitle}</div>
+                    <p class="loading-sub">This usually takes a few seconds</p>
+                    <ul class="loading-steps">
+                        <template for:each={loadingSteps} for:item="step">
+                            <li key={step.id}>
+                                <div class={step.statusClass}>{step.statusIcon}</div>
+                                {step.label}
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </template>
+
+        <!-- SCREEN 3: RESULTS -->
+        <template if:true={isScreen3}>
+            <div class="content">
+
+                <div class="result-summary">
+                    <div class="result-summary-label">AI Recommendation</div>
+                    <div class="result-summary-title">{recommendation.title}</div>
+                    <div class="result-summary-sub">{recommendation.subtitle}</div>
+                </div>
+
+                <div class="info-chip">
+                    <lightning-icon icon-name="utility:check" size="xx-small" alternative-text="Confidence"></lightning-icon>
+                    High confidence match · {recommendation.confidence}%
+                </div>
+
+                <template if:true={recommendation.suggestSiteSurvey}>
+                    <div class="survey-chip">
+                        <lightning-icon icon-name="utility:warning" size="xx-small" alternative-text="Survey"></lightning-icon>
+                        Site survey recommended before installation
+                    </div>
+                </template>
+
+                <div class="llm-note">
+                    <div class="llm-note-label">AI Analysis</div>
+                    <p>{recommendation.reasoning}</p>
+                </div>
+
+                <template if:true={hasWarnings}>
+                    <div class="warnings-box">
+                        <div class="warnings-label">Installation Warnings</div>
+                        <template for:each={recommendation.warnings} for:item="w">
+                            <div key={w} class="warning-item">
+                                <lightning-icon icon-name="utility:warning" size="xx-small" alternative-text="Warning"></lightning-icon>
+                                {w}
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <div class="products-header">Recommended Products</div>
+
+                <template for:each={recommendedProducts} for:item="product">
+                    <div key={product.id} class="product-card">
+                        <div class="product-card-header">
+                            <div>
+                                <div class="product-card-name">{product.name}</div>
+                                <div class="product-card-sku">{product.sku}</div>
+                            </div>
+                            <div>
+                                <div class="product-price">{product.priceFormatted}</div>
+                                <div class="product-price-label">{product.priceLabel}</div>
+                            </div>
+                        </div>
+                        <div class="product-card-desc">{product.desc}</div>
+                        <div class="product-tags">
+                            <span class={product.tagClass}>{product.tagLabel}</span>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="quote-total">
+                    <div class="quote-row">
+                        <span class="quote-row-label">Hardware subtotal</span>
+                        <span class="quote-row-value">{quoteTotals.hardware}</span>
+                    </div>
+                    <div class="quote-row">
+                        <span class="quote-row-label">Software &amp; digital</span>
+                        <span class="quote-row-value">{quoteTotals.software}</span>
+                    </div>
+                    <div class="quote-row">
+                        <span class="quote-row-label">Services</span>
+                        <span class="quote-row-value">{quoteTotals.services}</span>
+                    </div>
+                    <div class="quote-row total-row">
+                        <span class="quote-row-label-total">Estimated total</span>
+                        <span class="quote-row-value-total">{quoteTotals.grand}</span>
+                    </div>
+                </div>
+
+                <p class="quote-disclaimer">Indicative pricing · Final quote subject to site survey</p>
+
+            </div>
+        </template>
+
+        <!-- SCREEN 4: CONFIRMATION -->
+        <template if:true={isScreen4}>
+            <div class="content confirmation-content">
+
+                <div class="confirm-hero">
+                    <div class="confirm-ring confirm-ring-outer"></div>
+                    <div class="confirm-ring confirm-ring-mid"></div>
+                    <div class="confirm-icon-wrap">
+                        <lightning-icon icon-name="utility:check" size="medium" alternative-text="Done"></lightning-icon>
+                    </div>
+                </div>
+
+                <div class="confirm-heading">Quote Created</div>
+                <div class="confirm-sub">Your quote has been pushed to Revenue Cloud and is ready for review.</div>
+
+                <div class="confirm-ref-pill">
+                    <span class="confirm-ref-label">Quote Ref</span>
+                    <span class="confirm-ref-value">{quoteRef}</span>
+                </div>
+
+                <div class="confirm-summary-grid">
+                    <div class="confirm-summary-card">
+                        <div class="confirm-summary-card-label">Site</div>
+                        <div class="confirm-summary-card-value">{confirmSiteName}</div>
+                    </div>
+                    <div class="confirm-summary-card">
+                        <div class="confirm-summary-card-label">Configuration</div>
+                        <div class="confirm-summary-card-value">{confirmLayout}</div>
+                    </div>
+                    <div class="confirm-summary-card">
+                        <div class="confirm-summary-card-label">Products</div>
+                        <div class="confirm-summary-card-value">{confirmProductCount}</div>
+                    </div>
+                    <div class="confirm-summary-card confirm-summary-card-total">
+                        <div class="confirm-summary-card-label">Estimated Total</div>
+                        <div class="confirm-summary-card-value confirm-total-value">{quoteTotals.grand}</div>
+                    </div>
+                </div>
+
+                <div class="confirm-steps-done">
+                    <div class="confirm-step-item">
+                        <div class="confirm-step-dot"></div>
+                        <span>Site photos &amp; dimensions captured</span>
+                    </div>
+                    <div class="confirm-step-item">
+                        <div class="confirm-step-dot"></div>
+                        <span>AI analysis complete</span>
+                    </div>
+                    <div class="confirm-step-item">
+                        <div class="confirm-step-dot"></div>
+                        <span>Configuration reviewed &amp; confirmed</span>
+                    </div>
+                    <div class="confirm-step-item">
+                        <div class="confirm-step-dot"></div>
+                        <span>Quote pushed to Revenue Cloud</span>
+                    </div>
+                </div>
+
+            </div>
+        </template>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <template if:true={showBack}>
+                <button class="btn btn-secondary" onclick={goBack}>Back</button>
+            </template>
+            <template if:true={isScreen1}>
+                <template if:false={catalogReady}>
+                    <p class="catalog-empty-msg">{catalogEmptyMessage}</p>
+                </template>
+                <button class="btn btn-primary" onclick={goNext} disabled={nextDisabled}>{nextButtonLabel}</button>
+            </template>
+            <template if:true={isScreen4}>
+                <button class="btn btn-secondary btn-restart" onclick={handleRestart}>
+                    <lightning-icon icon-name="utility:refresh" size="xx-small" alternative-text="Restart"></lightning-icon>
+                    New Assessment
+                </button>
+            </template>
+            <template if:false={isScreen1}>
+                <template if:false={isScreen4}>
+                    <button class="btn btn-primary" onclick={goNext}>{nextButtonLabel}</button>
+                </template>
+            </template>
+        </div>
+
+    </div>
+</template>

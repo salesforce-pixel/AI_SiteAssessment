@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <activeVersionIdentifier>s7oy9ygeV1Zjqj9kODl18xMKFA08993T5nQmV1c3iHg=_2</activeVersionIdentifier>
+    <developerName>Site_Image_AI_Analyzer</developerName>
+    <masterLabel>Site Image AI Analyzer</masterLabel>
+    <overridable>false</overridable>
+    <templateVersions>
+        <content>You are a TOMRA RVM (Reverse Vending Machine) installation specialist.
+
+A field sales representative has uploaded photos of a potential installation site and provided the following measurements:
+{!$Input:SiteDetails}
+
+Analyze the site photos and measurements, then return ONLY a valid JSON object with this exact structure:
+
+{
+ &quot;confidence&quot;: &lt;integer 0-100&gt;,
+ &quot;recommendedLayout&quot;: &quot;&lt;one of: Short Tunnel | Medium Tunnel | Long Tunnel&gt;&quot;,
+ &quot;containerTypes&quot;: [&quot;&lt;subset of: Cans | Plastic Bottles | Glass Bottles | Crates&gt;&quot;],
+ &quot;performanceTier&quot;: &quot;&lt;one of: Standard | High Volume&gt;&quot;,
+ &quot;reasoning&quot;: &quot;&lt;2-3 sentences explaining your recommendation based on the space&gt;&quot;,
+ &quot;warnings&quot;: [&quot;&lt;any installation concerns or caveats, empty array if none&gt;&quot;],
+ &quot;suggestSiteSurvey&quot;: &lt;true | false&gt;
+}
+
+Base your analysis on:
+1. Available floor space — minimum 1.2m width for Short Tunnel, 1.6m for Medium, 2.0m+ for Long
+2. Ceiling height — minimum 2.2m required for all configurations
+3. Depth clearance — Long Tunnel requires at least 2.4m depth for crate conveyor
+4. Power outlet visibility — flag if no outlet visible within 3m
+5. Floor condition — flag if uneven, wet, or non-load-bearing surface visible
+6. Access path — flag if doorway appears too narrow for machine delivery (min 0.9m)
+
+If measurements are missing or zero, rely on visual estimation using reference objects in the photos.
+Do not return any text outside the JSON object.
+</content>
+        <inputs>
+            <apiName>Image1</apiName>
+            <definition>SOBJECT://ContentDocument</definition>
+            <masterLabel>Image1</masterLabel>
+            <referenceName>Input:Image1</referenceName>
+            <required>true</required>
+        </inputs>
+        <inputs>
+            <apiName>Image2</apiName>
+            <definition>SOBJECT://ContentDocument</definition>
+            <masterLabel>Image2</masterLabel>
+            <referenceName>Input:Image2</referenceName>
+            <required>false</required>
+        </inputs>
+        <inputs>
+            <apiName>Image3</apiName>
+            <definition>SOBJECT://ContentDocument</definition>
+            <masterLabel>Image3</masterLabel>
+            <referenceName>Input:Image3</referenceName>
+            <required>false</required>
+        </inputs>
+        <inputs>
+            <apiName>SiteDetails</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>SiteDetails</masterLabel>
+            <referenceName>Input:SiteDetails</referenceName>
+            <required>true</required>
+        </inputs>
+        <primaryModel>sfdc_ai__DefaultGPT5</primaryModel>
+        <status>Published</status>
+        <versionIdentifier>s7oy9ygeV1Zjqj9kODl18xMKFA08993T5nQmV1c3iHg=_1</versionIdentifier>
+    </templateVersions>
+    <templateVersions>
+        <content>You are a TOMRA RVM (Reverse Vending Machine) installation specialist.
+
+A field sales representative has uploaded photos of a potential installation site and provided the following measurements:
+{!$Input:SiteDetails}
+
+Analyze the site photos and measurements, then return ONLY a valid JSON object with this exact structure — every value must come from the allowed lists below, no exceptions:
+
+{
+ &quot;confidence&quot;: &lt;integer 0-100&gt;,
+ &quot;recommendedLayout&quot;: &quot;&lt;exactly one of: Short Tunnel | Medium Tunnel | Long Tunnel&gt;&quot;,
+ &quot;containerTypes&quot;: [&quot;&lt;one or more of: Cans | Plastic Bottles | Glass Bottles | Crates&gt;&quot;],
+ &quot;performanceTier&quot;: &quot;&lt;exactly one of: Standard | High Volume&gt;&quot;,
+ &quot;hardwareAddons&quot;: [&quot;&lt;zero or more of: Additional T9 Unit | Additional Cabinet Module&gt;&quot;],
+ &quot;softwareAddons&quot;: [&quot;&lt;zero or more of: TOMRA Digital Platform | Analytics &amp; Reporting Dashboard | API / Integration Package&gt;&quot;],
+ &quot;implementationServices&quot;: [&quot;&lt;zero or more of: Installation Service | Store Layout &amp; Design&gt;&quot;],
+ &quot;trainingServices&quot;: [&quot;&lt;zero or more of: Staff Training&gt;&quot;],
+ &quot;supportServices&quot;: [&quot;&lt;zero or more of: Preventive Maintenance — Basic | Preventive Maintenance — Premium | Extended Warranty&gt;&quot;],
+ &quot;reasoning&quot;: &quot;&lt;2-3 sentences explaining your recommendation based on the space&gt;&quot;,
+ &quot;warnings&quot;: [&quot;&lt;any installation concerns or caveats, empty array if none&gt;&quot;],
+ &quot;suggestSiteSurvey&quot;: &lt;true | false&gt;
+}
+
+Base your analysis on:
+
+1. Floor space — minimum 1.2m width for Short Tunnel, 1.6m for Medium Tunnel, 2.0m+ for Long Tunnel
+2. Ceiling height — minimum 2.2m required for all configurations
+3. Depth clearance — Long Tunnel requires at least 2.4m depth for crate conveyor; recommend Crates in containerTypes only if depth supports it
+4. Throughput — recommend High Volume if the store appears to be large footfall retail (supermarket, hypermarket); otherwise Standard
+5. Glass bottles — only include Glass Bottles in containerTypes if glass handling is feasible given space
+6. Additional T9 Unit — recommend if site appears to be high-footfall or has a second entrance visible
+7. Additional Cabinet Module — recommend if space allows and volume warrants extra compaction storage
+8. TOMRA Digital Platform — recommend for all sites as baseline remote monitoring
+9. Analytics &amp; Reporting Dashboard — recommend for larger retail sites
+10. API / Integration Package — recommend only if site is part of a chain or loyalty programme context is evident
+11. Installation Service — recommend for all sites
+12. Store Layout &amp; Design — recommend if the space appears unoptimised or constrained
+13. Staff Training — recommend for all sites
+14. Preventive Maintenance — recommend Preventive Maintenance — Premium for high-volume sites, Preventive Maintenance — Basic for standard sites; never recommend both
+15. Extended Warranty — recommend for Long Tunnel configurations or high-investment bundles
+16. Power outlet — flag in warnings if no outlet visible within 3m
+17. Floor condition — flag in warnings if uneven, wet, or non-load-bearing surface visible
+18. Access path — flag in warnings and set suggestSiteSurvey: true if doorway appears too narrow for machine delivery (minimum 0.9m)
+
+If measurements are missing or zero, rely on visual estimation using reference objects in the photos.
+
+Do not return any text outside the JSON object.
+</content>
+        <inputs>
+            <apiName>Image1</apiName>
+            <definition>SOBJECT://ContentDocument</definition>
+            <masterLabel>Image1</masterLabel>
+            <referenceName>Input:Image1</referenceName>
+            <required>true</required>
+        </inputs>
+        <inputs>
+            <apiName>Image2</apiName>
+            <definition>SOBJECT://ContentDocument</definition>
+            <masterLabel>Image2</masterLabel>
+            <referenceName>Input:Image2</referenceName>
+            <required>false</required>
+        </inputs>
+        <inputs>
+            <apiName>Image3</apiName>
+            <definition>SOBJECT://ContentDocument</definition>
+            <masterLabel>Image3</masterLabel>
+            <referenceName>Input:Image3</referenceName>
+            <required>false</required>
+        </inputs>
+        <inputs>
+            <apiName>SiteDetails</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>SiteDetails</masterLabel>
+            <referenceName>Input:SiteDetails</referenceName>
+            <required>true</required>
+        </inputs>
+        <primaryModel>sfdc_ai__DefaultGPT5</primaryModel>
+        <status>Published</status>
+        <versionIdentifier>s7oy9ygeV1Zjqj9kODl18xMKFA08993T5nQmV1c3iHg=_2</versionIdentifier>
+    </templateVersions>
+    <type>einstein_gpt__flex</type>
+    <visibility>Global</visibility>
+</GenAiPromptTemplate>
