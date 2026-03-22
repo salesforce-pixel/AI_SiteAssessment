@@ -56,14 +56,27 @@
                     </div>
 
                     <template if:true={hasUploadedFiles}>
-                        <ul class="uploaded-file-list">
-                            <template for:each={uploadedFileList} for:item="f">
-                                <li key={f.index} class="uploaded-file-item">
-                                    <lightning-icon icon-name="utility:file" size="xx-small" alternative-text="File"></lightning-icon>
-                                    {f.label}
-                                </li>
+                        <div class="photo-strip">
+                            <template for:each={uploadedFiles} for:item="f">
+                                <div key={f.contentDocumentId} class="photo-thumb-wrap">
+                                    <img class="photo-thumb" src={f.previewUrl} alt={f.name} />
+                                    <div class="photo-thumb-overlay">
+                                        <lightning-icon icon-name="utility:check" size="xx-small"></lightning-icon>
+                                    </div>
+                                </div>
                             </template>
-                        </ul>
+                            <!-- Empty slot placeholders -->
+                            <template if:true={showSlot2}>
+                                <div class="photo-thumb-wrap photo-thumb-empty">
+                                    <lightning-icon icon-name="utility:image" size="small" alternative-text="Empty"></lightning-icon>
+                                </div>
+                            </template>
+                            <template if:true={showSlot3}>
+                                <div class="photo-thumb-wrap photo-thumb-empty">
+                                    <lightning-icon icon-name="utility:image" size="small" alternative-text="Empty"></lightning-icon>
+                                </div>
+                            </template>
+                        </div>
                     </template>
 
                     <div class="upload-area">

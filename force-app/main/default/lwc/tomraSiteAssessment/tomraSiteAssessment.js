@@ -98,8 +98,12 @@ export default class TomraSiteAssessment extends LightningElement {
         if (!files || !files.length) return;
         files.forEach(f => {
             if (this.uploadedFiles.length >= 3) return;
-            this.uploadedFiles = [...this.uploadedFiles, { contentDocumentId: f.documentId, name: f.name }];
-            console.log('File uploaded — documentId:', f.documentId, '| name:', f.name);
+            const previewUrl = '/sfc/servlet.shepherd/document/download/' + f.documentId;
+            this.uploadedFiles = [...this.uploadedFiles, { 
+                contentDocumentId: f.documentId, 
+                name: f.name,
+                previewUrl 
+            }];
         });
         console.log('All uploaded files so far:', JSON.stringify(this.uploadedFiles, null, 2));
         this.photoError = null;
@@ -213,6 +217,9 @@ export default class TomraSiteAssessment extends LightningElement {
         const count = this.recommendedProducts.length;
         return count === 1 ? '1 product' : `${count} products`;
     }
+
+    get showSlot2() { return this.uploadedFiles.length < 2; }
+    get showSlot3() { return this.uploadedFiles.length < 3; }
 
     // ── Progress step getters ─────────────────────────────────────────────────
     get step1DotClass()   { return this._dotClass(1); }

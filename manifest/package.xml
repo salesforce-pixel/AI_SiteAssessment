@@ -2,6 +2,7 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>TomraSiteImageAnalyzer</members>
+        <members>TomraSiteRecommender</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -14,6 +15,7 @@
     </types>
     <types>
         <members>Site_Image_AI_Analyzer</members>
+        <members>Site_Product_Recommendation</members>
         <name>GenAiPromptTemplate</name>
     </types>
     <version>66.0</version>
