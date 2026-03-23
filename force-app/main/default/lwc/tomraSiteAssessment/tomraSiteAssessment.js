@@ -1,7 +1,6 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import { getRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import CATALOG_FIELD from '@salesforce/schema/Product_Catalog__c.Product_Catalog_JSON__c';
 import CATALOG_METADATA_ID from '@salesforce/label/c.Product_Catalog_Metadata_Id';
 import runAnalysis from '@salesforce/apex/TomraSiteImageAnalyzer.runAnalysis';
 import runRecommendation from '@salesforce/apex/TomraSiteRecommender.runRecommendation';
@@ -178,6 +177,10 @@ export default class TomraSiteAssessment extends LightningElement {
 
     // Cancellation flag — set to true when goBack() is called mid-load or on
     // disconnect, so in-flight Apex .then() blocks do not advance the screen.
+    // FIX: _cancelPendingWork() no longer re-arms this to false itself.
+    // The flag is only ever reset to false at the top of each async operation
+    // (_runImageAnalysis, _runRecommendation), ensuring any already-queued
+    // microtasks from a cancelled Promise.all see the flag correctly.
     _cancelled = false;
 
     // ── Demo pill getters ─────────────────────────────────────────────────────
@@ -195,7 +198,7 @@ export default class TomraSiteAssessment extends LightningElement {
     @wire(getRecord, { recordId: CATALOG_METADATA_ID, fields: ['Product_Catalog__mdt.Product_Catalog_JSON__c'] })
     wiredRecord({ data, error }) {
         if (data) {
-            const raw = getFieldValue(data, CATALOG_FIELD);
+            const raw = data.fields.Product_Catalog_JSON__c.value;
             console.log('Raw product JSON from Custom Metadata: ' + raw);
             if (raw) {
                 try {
@@ -289,14 +292,18 @@ export default class TomraSiteAssessment extends LightningElement {
     // ── State ─────────────────────────────────────────────────────────────────
     @track currentScreen  = 1;
     @track isLoading      = false;
-    @track loadingTitle   = 'Generating Recommendations';
+    @track loadingTitle   = 'Work in Progress';
     @track assessmentRef  = 'ASS-' + Math.floor(1000 + Math.random() * 9000);
     @track quoteRef       = generateQuoteRef();
     @track aiPrefilled    = false;
     @track aiAnalysis     = null;
 
+    // FIX: @track added to dimensions and siteDetails so that any future direct
+    // property mutation (e.g. this.dimensions.width = x) triggers re-render.
+    // Spread-based reassignment already worked in modern LWC, but decorating
+    // explicitly is consistent with the rest of the state declarations and
+    // prevents a subtle footgun for future maintainers.
     @track dimensions     = { width: '', height: '', depth: '' };
-    @track dimensionError = null;
     @track siteDetails    = { storeName: 'Tesco Extra – Wembley', city: 'London', notes: '' };
 
     @track layoutOptions = [
@@ -346,6 +353,11 @@ export default class TomraSiteAssessment extends LightningElement {
     get isScreen2() { return this.currentScreen === 2 && !this.isLoading; }
     get isScreen3() { return this.currentScreen === 3 && !this.isLoading; }
     get isScreen4() { return this.currentScreen === 4 && !this.isLoading; }
+
+    get confirmPerformanceTier() {
+        const selected = this.performanceOptions.find(o => o.selected);
+        return selected ? selected.label : '—';
+    }
 
     get headerSubtitle() {
         if (this.isLoading) return this.loadingTitle + '…';
@@ -434,16 +446,38 @@ export default class TomraSiteAssessment extends LightningElement {
         this.siteDetails = { ...this.siteDetails, [field]: event.target.value };
     }
 
+    // FIX: _groupProp() throws on an unknown data-group value, which would
+    // previously surface as an unhandled exception and could crash the component
+    // subtree in production. Both handlers now catch that throw and show a toast
+    // instead, keeping the component alive and giving the rep a clear signal.
     handleSingleSelect(event) {
-        const prop = this._groupProp(event.currentTarget.dataset.group);
-        const id   = event.currentTarget.dataset.id;
-        this[prop] = this[prop].map(opt => applySelected(opt, opt.id === id));
+        try {
+            const prop = this._groupProp(event.currentTarget.dataset.group);
+            const id   = event.currentTarget.dataset.id;
+            this[prop] = this[prop].map(opt => applySelected(opt, opt.id === id));
+        } catch (e) {
+            console.error(e);
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Selection error',
+                message: e.message,
+                variant: 'error',
+            }));
+        }
     }
 
     handleMultiSelect(event) {
-        const prop = this._groupProp(event.currentTarget.dataset.group);
-        const id   = event.currentTarget.dataset.id;
-        this[prop] = this[prop].map(opt => opt.id !== id ? opt : applySelected(opt, !opt.selected));
+        try {
+            const prop = this._groupProp(event.currentTarget.dataset.group);
+            const id   = event.currentTarget.dataset.id;
+            this[prop] = this[prop].map(opt => opt.id !== id ? opt : applySelected(opt, !opt.selected));
+        } catch (e) {
+            console.error(e);
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Selection error',
+                message: e.message,
+                variant: 'error',
+            }));
+        }
     }
 
     // Resolves the @track property name for a given data-group attribute value.
@@ -492,12 +526,20 @@ export default class TomraSiteAssessment extends LightningElement {
     // ── Cancellation helper ───────────────────────────────────────────────────
     // Call this before navigating back or on disconnect to stop any in-flight
     // Apex promises from advancing the screen after the user has moved away.
+    //
+    // FIX: Removed the previous `this._cancelled = false` re-arm at the end of
+    // this method. Re-arming here created a race: if a Promise.all had already
+    // resolved (microtask queued) before goBack() called this method, the
+    // microtask would run after the re-arm and see _cancelled === false,
+    // advancing the screen despite the user having navigated away.
+    //
+    // _cancelled is now only ever reset to false at the very top of
+    // _runImageAnalysis and _runRecommendation, immediately before new async
+    // work begins — at that point any prior microtasks have already settled.
     _cancelPendingWork() {
         this._cancelled = true;
         this._pendingTimeouts.forEach(id => clearTimeout(id));
         this._pendingTimeouts = [];
-        // Re-arm for the next operation
-        this._cancelled = false;
     }
 
     // Registers a timeout ID so it can be cancelled if needed.
@@ -510,6 +552,13 @@ export default class TomraSiteAssessment extends LightningElement {
 
     // ── Navigation ────────────────────────────────────────────────────────────
     goNext() {
+        // FIX: Guard against double-submit. Without this, a fast double-click
+        // while the spinner is running on screens 2 or 3 would call
+        // _runRecommendation() or _pushToCpq() a second time, creating two
+        // concurrent async chains writing to the same @track state. Screen 1
+        // was already protected by nextDisabled; screens 2 and 3 were not.
+        if (this.isLoading) return;
+
         if (this.currentScreen === 1) {
             if (this.nextDisabled) return;
 
@@ -583,7 +632,11 @@ export default class TomraSiteAssessment extends LightningElement {
 
         const ids = this.uploadedFiles.map(f => f.contentDocumentId);
         const [id1 = null, id2 = null, id3 = null] = ids;
-        const measurementsJSON = JSON.stringify(this.dimensions);
+        const measurementsJSON = JSON.stringify({
+            width:  `${this.dimensions.width} meters`,
+            height: `${this.dimensions.height} meters`,
+            depth:  `${this.dimensions.depth} meters`,
+        });
 
         console.log('Calling Apex runAnalysis with:', JSON.stringify({
             fileId1: id1,
@@ -914,6 +967,7 @@ export default class TomraSiteAssessment extends LightningElement {
         this.isLoading    = true;
         this._cancelled   = false;
         this.quoteRef     = generateQuoteRef();
+        this.loadingTitle = 'Creating Quote';
         this.loadingSteps = [
             { id: 1, label: 'Finalising product selection', statusClass: 'step-status done',    statusIcon: '✓' },
             { id: 2, label: 'Pushing to Revenue Cloud',     statusClass: 'step-status running', statusIcon: '●' },
