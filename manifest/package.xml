@@ -26,5 +26,9 @@
         <members>Product_Catalog_Metadata_Id</members>
         <name>CustomLabel</name>
     </types>
+    <types>
+        <members>Product_Catalog__mdt-Product Catalog Layout</members>
+        <name>Layout</name>
+    </types>
     <version>66.0</version>
 </Package>
