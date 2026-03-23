@@ -226,7 +226,7 @@ export default class TomraSiteAssessment extends LightningElement {
     get catalogNotReady() { return !this.catalogReady; }
     get catalogEmptyMessage() {
         return this.recordId
-            ? 'No product catalog found on this Opportunity. Populate Product_Catalog_JSON__c to continue.'
+            ? 'No product catalog found. Make sure the Custom Metadata - Product Catalog is populated.'
             : 'Open this component from an Opportunity record to load the product catalog.';
     }
 
