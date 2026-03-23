@@ -1,6 +1,6 @@
 public with sharing class TomraSiteRecommender {
     
-    
+    @AuraEnabled
     public static String runRecommendation(String Phase_1_AI_Analysis, String Available_Product_Catalog, String Customer_Configuration_Selections) {
         try {
             // Prepare input for the Einstein Prompt Template

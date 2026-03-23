@@ -10,13 +10,21 @@
         <name>LightningComponentBundle</name>
     </types>
     <types>
-        <members>Opportunity.Product_Catalog_JSON__c</members>
-        <name>CustomField</name>
-    </types>
-    <types>
         <members>Site_Image_AI_Analyzer</members>
         <members>Site_Product_Recommendation</members>
         <name>GenAiPromptTemplate</name>
+    </types>
+    <types>
+        <members>Product_Catalog__mdt</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Product_Catalog.Product_Catalog_JSON_Data</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
+        <members>Product_Catalog_Metadata_Id</members>
+        <name>CustomLabel</name>
     </types>
     <version>66.0</version>
 </Package>

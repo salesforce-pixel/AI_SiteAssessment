@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Product_Catalog_Metadata_Id</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Product Catalog Metadata Id</shortDescription>
+        <value>m0RHp000000YJ1Z</value>
+    </labels>
+</CustomLabels>

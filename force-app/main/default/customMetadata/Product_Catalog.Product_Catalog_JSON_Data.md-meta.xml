@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Product Catalog JSON Data</label>
+    <protected>false</protected>
+    <values>
+        <field>Product_Catalog_JSON__c</field>
+        <value xsi:type="xsd:string">[
+  {
+    &quot;id&quot;: &quot;R1-MED&quot;,
+    &quot;name&quot;: &quot;TOMRA R1 Medium Tunnel&quot;,
+    &quot;sku&quot;: &quot;TOM-R1-MED&quot;,
+    &quot;category&quot;: &quot;hardware&quot;,
+    &quot;tag&quot;: &quot;required&quot;,
+    &quot;price&quot;: 28000,
+    &quot;desc&quot;: &quot;Core RVM unit for medium-volume retail. Dual-stream processing, 1.6m width footprint. Handles cans and plastic bottles.&quot;,
+    &quot;triggered&quot;: [&quot;Medium Tunnel&quot;, &quot;Short Tunnel&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;R1-LONG&quot;,
+    &quot;name&quot;: &quot;TOMRA R1 Long Tunnel&quot;,
+    &quot;sku&quot;: &quot;TOM-R1-LNG&quot;,
+    &quot;category&quot;: &quot;hardware&quot;,
+    &quot;tag&quot;: &quot;required&quot;,
+    &quot;price&quot;: 38000,
+    &quot;desc&quot;: &quot;Extended RVM with integrated crate handling conveyor. Requires minimum 2.4m depth clearance.&quot;,
+    &quot;triggered&quot;: [&quot;Long Tunnel&quot;, &quot;Crates&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;GLASS-MOD&quot;,
+    &quot;name&quot;: &quot;Glass Acceptance Module&quot;,
+    &quot;sku&quot;: &quot;TOM-GLASS-01&quot;,
+    &quot;category&quot;: &quot;hardware&quot;,
+    &quot;tag&quot;: &quot;addon&quot;,
+    &quot;price&quot;: 4200,
+    &quot;desc&quot;: &quot;Bolt-on glass bottle processing unit with breakage detection and pneumatic compaction.&quot;,
+    &quot;triggered&quot;: [&quot;Glass Bottles&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;PERF-HV&quot;,
+    &quot;name&quot;: &quot;High Volume Performance Kit&quot;,
+    &quot;sku&quot;: &quot;TOM-HV-60&quot;,
+    &quot;category&quot;: &quot;hardware&quot;,
+    &quot;tag&quot;: &quot;addon&quot;,
+    &quot;price&quot;: 3500,
+    &quot;desc&quot;: &quot;Upgraded conveyor motors and sorting algorithms enabling throughput up to 60 containers/min.&quot;,
+    &quot;triggered&quot;: [&quot;High Volume&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;T9-ADD&quot;,
+    &quot;name&quot;: &quot;Additional T9 Unit&quot;,
+    &quot;sku&quot;: &quot;TOM-T9-ADD&quot;,
+    &quot;category&quot;: &quot;hardware&quot;,
+    &quot;tag&quot;: &quot;addon&quot;,
+    &quot;price&quot;: 9800,
+    &quot;desc&quot;: &quot;Secondary RVM terminal for high-footfall entrances. Mirrors primary unit configuration.&quot;,
+    &quot;triggered&quot;: [&quot;Additional T9 Unit&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;CAB-MOD&quot;,
+    &quot;name&quot;: &quot;Additional Cabinet Module&quot;,
+    &quot;sku&quot;: &quot;TOM-CAB-01&quot;,
+    &quot;category&quot;: &quot;hardware&quot;,
+    &quot;tag&quot;: &quot;addon&quot;,
+    &quot;price&quot;: 2100,
+    &quot;desc&quot;: &quot;Modular storage cabinet for compacted material with sensor-based fill level monitoring.&quot;,
+    &quot;triggered&quot;: [&quot;Additional Cabinet Module&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;DIGITAL&quot;,
+    &quot;name&quot;: &quot;TOMRA Digital Platform&quot;,
+    &quot;sku&quot;: &quot;TOM-DIG-SUB&quot;,
+    &quot;category&quot;: &quot;software&quot;,
+    &quot;tag&quot;: &quot;software&quot;,
+    &quot;price&quot;: 1800,
+    &quot;desc&quot;: &quot;Annual subscription. Remote monitoring, machine health dashboard, and uptime SLA reporting.&quot;,
+    &quot;triggered&quot;: [&quot;TOMRA Digital Platform&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;ANALYTICS&quot;,
+    &quot;name&quot;: &quot;Analytics &amp; Reporting Dashboard&quot;,
+    &quot;sku&quot;: &quot;TOM-ANA-01&quot;,
+    &quot;category&quot;: &quot;software&quot;,
+    &quot;tag&quot;: &quot;software&quot;,
+    &quot;price&quot;: 1200,
+    &quot;desc&quot;: &quot;Consumer behaviour analytics, peak-time heatmaps, and deposit redemption trend reports.&quot;,
+    &quot;triggered&quot;: [&quot;Analytics &amp; Reporting Dashboard&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;API-PKG&quot;,
+    &quot;name&quot;: &quot;API / Integration Package&quot;,
+    &quot;sku&quot;: &quot;TOM-API-01&quot;,
+    &quot;category&quot;: &quot;software&quot;,
+    &quot;tag&quot;: &quot;software&quot;,
+    &quot;price&quot;: 2400,
+    &quot;desc&quot;: &quot;RESTful API access for ERP and loyalty system integration. Includes 12-month developer support.&quot;,
+    &quot;triggered&quot;: [&quot;API / Integration Package&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;INSTALL&quot;,
+    &quot;name&quot;: &quot;Installation Service&quot;,
+    &quot;sku&quot;: &quot;TOM-SVC-INST&quot;,
+    &quot;category&quot;: &quot;service&quot;,
+    &quot;tag&quot;: &quot;service&quot;,
+    &quot;price&quot;: 2800,
+    &quot;desc&quot;: &quot;Full on-site installation, alignment, commissioning, and first-run validation by certified TOMRA engineers.&quot;,
+    &quot;triggered&quot;: [&quot;Installation Service&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;LAYOUT&quot;,
+    &quot;name&quot;: &quot;Store Layout &amp; Design&quot;,
+    &quot;sku&quot;: &quot;TOM-SVC-LAY&quot;,
+    &quot;category&quot;: &quot;service&quot;,
+    &quot;tag&quot;: &quot;service&quot;,
+    &quot;price&quot;: 1400,
+    &quot;desc&quot;: &quot;Space planning consultation including pedestrian flow modelling and signage placement advisory.&quot;,
+    &quot;triggered&quot;: [&quot;Store Layout &amp; Design&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;TRAINING&quot;,
+    &quot;name&quot;: &quot;Staff Training Programme&quot;,
+    &quot;sku&quot;: &quot;TOM-SVC-TRN&quot;,
+    &quot;category&quot;: &quot;service&quot;,
+    &quot;tag&quot;: &quot;service&quot;,
+    &quot;price&quot;: 800,
+    &quot;desc&quot;: &quot;Half-day on-site staff training covering operation, basic troubleshooting, and hygiene protocols.&quot;,
+    &quot;triggered&quot;: [&quot;Staff Training&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;MAINT-B&quot;,
+    &quot;name&quot;: &quot;Preventive Maintenance — Basic&quot;,
+    &quot;sku&quot;: &quot;TOM-MAINT-B&quot;,
+    &quot;category&quot;: &quot;service&quot;,
+    &quot;tag&quot;: &quot;service&quot;,
+    &quot;price&quot;: 1600,
+    &quot;desc&quot;: &quot;Annual preventive service visit, remote diagnostics, and parts coverage for wear components.&quot;,
+    &quot;triggered&quot;: [&quot;Preventive Maintenance — Basic&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;MAINT-P&quot;,
+    &quot;name&quot;: &quot;Preventive Maintenance — Premium&quot;,
+    &quot;sku&quot;: &quot;TOM-MAINT-P&quot;,
+    &quot;category&quot;: &quot;service&quot;,
+    &quot;tag&quot;: &quot;service&quot;,
+    &quot;price&quot;: 2900,
+    &quot;desc&quot;: &quot;Quarterly visits, priority response SLA (4hr), full parts coverage, and loaner unit guarantee.&quot;,
+    &quot;triggered&quot;: [&quot;Preventive Maintenance — Premium&quot;]
+  },
+  {
+    &quot;id&quot;: &quot;WARRANTY&quot;,
+    &quot;name&quot;: &quot;Extended Warranty (2yr)&quot;,
+    &quot;sku&quot;: &quot;TOM-WAR-2Y&quot;,
+    &quot;category&quot;: &quot;service&quot;,
+    &quot;tag&quot;: &quot;service&quot;,
+    &quot;price&quot;: 2200,
+    &quot;desc&quot;: &quot;Extends standard 12-month warranty to 36 months covering all mechanical and electronic components.&quot;,
+    &quot;triggered&quot;: [&quot;Extended Warranty&quot;]
+  }
+]</value>
+    </values>
+</CustomMetadata>
