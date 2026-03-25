@@ -303,7 +303,7 @@ export default class TomraSiteAssessment extends LightningElement {
     // Spread-based reassignment already worked in modern LWC, but decorating
     // explicitly is consistent with the rest of the state declarations and
     // prevents a subtle footgun for future maintainers.
-    @track dimensions     = { width: '', height: '', depth: '' };
+    @track dimensions     = { width: '4', height: '7', depth: '5' };
     @track siteDetails    = { storeName: 'Tesco Extra – Wembley', city: 'London', notes: '' };
 
     @track layoutOptions = [
@@ -505,7 +505,7 @@ export default class TomraSiteAssessment extends LightningElement {
         this.aiAnalysis     = null;
         this.uploadedFiles  = [];
         this.photoError     = null;
-        this.dimensions     = { width: '', height: '', depth: '' };
+        this.dimensions     = { width: '4', height: '7', depth: '5' };
         this.siteDetails    = { storeName: '', city: '', notes: '' };
         this.recommendedProducts = [];
         this.recommendation = { title: '', subtitle: '', confidence: 0, reasoning: '', warnings: [], suggestSiteSurvey: false };
